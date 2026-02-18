@@ -1,8 +1,11 @@
 use std::fs;
+mod repl;
 mod song_manager;
 
 fn create_initial_playlist_dir() -> std::io::Result<()> {
-    fs::create_dir("playlists")?;
+    if !fs::exists("playlists")? {
+        fs::create_dir("playlists")?;
+    }
     Ok(())
 }
 
@@ -11,5 +14,5 @@ fn main() {
         println!("Error creating directory {}", e);
         return;
     }
-    song_manager::audio_player::play_audio("data/testing/test.mp3")
+    repl::start();
 }
