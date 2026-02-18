@@ -2,19 +2,37 @@ use std::fs;
 use std::path::Path;
 
 use crate::app_interface::AppInterface;
-use crate::song_manager::audio_player;
+use crate::song_manager::track_manager;
 mod app_interface;
 mod playlist_manager;
 mod repl;
 mod song_manager;
 
+#[derive(Debug)]
+pub enum PlaybackState {
+    playing,
+    paused,
+    stopped,
+}
+
+#[derive(Debug)]
+pub struct PlaylistState {
+    pub name: String,
+    pub playback_state: PlaybackState,
+}
+
+#[derive(Debug)]
 enum State {
     Main,
-    Playlist { name: String },
+    Playlist(PlaylistState),
 }
 
 pub struct MusicManager {
     state: State,
+}
+
+impl MusicManager {
+    fn audio_playback_finished(&mut self) {}
 }
 
 impl AppInterface for MusicManager {
@@ -34,7 +52,10 @@ impl AppInterface for MusicManager {
         if matches!(&self.state, State::Main) {
             let path = format!("playlists/{}", name);
             if Path::new(&path).exists() {
-                self.state = State::Playlist { name };
+                self.state = State::Playlist(PlaylistState {
+                    name,
+                    playback_state: PlaybackState::stopped,
+                });
             } else {
                 println!("no souch playlist exsists")
             }
@@ -42,11 +63,11 @@ impl AppInterface for MusicManager {
     }
 
     fn play(&mut self) {
-        match &self.state {
+        match &mut self.state {
             State::Main => println!("no playlist selected"),
-            State::Playlist { name } => {
-                let new_path: String = format!("playlists/{}/test.mp3", name);
-                audio_player::play_audio(&new_path)
+            State::Playlist(playlist) => {
+                playlist.playback_state = PlaybackState::playing;
+                track_manager::play_playlist(&playlist.name);
             }
         }
     }
@@ -57,7 +78,9 @@ impl AppInterface for MusicManager {
 
     fn help(&mut self) {}
 
-    fn return_to_main(&mut self) {}
+    fn return_to_main(&mut self) {
+        self.state = State::Main;
+    }
 
     fn search(&mut self, query: String, limit: usize) {}
 

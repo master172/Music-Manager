@@ -1,4 +1,4 @@
-use crate::app_interface::{self, AppInterface};
+use crate::app_interface::AppInterface;
 
 use crate::repl::command::{Command, PlaybackOptions, PlaylistOptions};
 

@@ -1,7 +1,7 @@
 use rodio::Decoder;
 use std::fs::File;
 
-pub fn play_audio(file_path: &str) {
+pub fn play_audio(file_path: &str) -> bool {
     let stream_handle =
         rodio::OutputStreamBuilder::open_default_stream().expect("open default audio stream");
 
@@ -13,4 +13,5 @@ pub fn play_audio(file_path: &str) {
     sink.append(source);
 
     sink.sleep_until_end();
+    true
 }
