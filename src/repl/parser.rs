@@ -46,6 +46,8 @@ pub fn parse(input: &str) -> Command {
             link: url.to_string(),
         },
 
+        ["return"] => Command::Return,
+
         _ => Command::Unknown(input.to_string()),
     }
 }

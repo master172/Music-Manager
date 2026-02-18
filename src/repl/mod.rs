@@ -4,9 +4,11 @@ pub mod parser;
 
 use std::io::{self, Write};
 
-pub fn start() {
+use crate::app_interface::AppInterface;
+
+pub fn start(app: &mut dyn AppInterface) {
     loop {
-        println!("> ");
+        print!("> ");
         io::stdout().flush().unwrap();
 
         let mut input = String::new();
@@ -15,7 +17,7 @@ pub fn start() {
             continue;
         }
         let command = parser::parse(&input);
-        let result = executor::execute(command);
+        let result = executor::execute(command, app);
         if !result {
             break;
         }

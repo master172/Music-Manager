@@ -30,5 +30,6 @@ pub enum Command {
         link: String,
     },
     Help,
+    Return,
     Unknown(String),
 }

@@ -1,30 +1,30 @@
+use crate::app_interface::{self, AppInterface};
+
 use crate::repl::command::{Command, PlaybackOptions, PlaylistOptions};
 
-pub fn execute(command: Command) -> bool {
+pub fn execute(command: Command, app: &mut dyn AppInterface) -> bool {
     match command {
         Command::Quit => {
-            println!("Bye");
+            app.quit();
             return false;
         }
         Command::Help => {
-            println!("Help menu line 1");
-            println!("Help menu line 2");
+            app.help();
         }
         Command::Playlist { option, name } => match option {
-            PlaylistOptions::New => println!("create new playlist with name {}", name),
-            PlaylistOptions::Delete => println!("Delete playlist with name {}", name),
-            PlaylistOptions::Enter => println!("Enter playlist with name {}", name),
+            PlaylistOptions::New => app.create_playlist(name),
+            PlaylistOptions::Delete => app.delete_playlist(name),
+            PlaylistOptions::Enter => app.enter_playlist(name),
         },
         Command::Playback { option } => match option {
-            PlaybackOptions::Play => println!("Play playlist"),
-            PlaybackOptions::Pause => println!("Pause playlist"),
-            PlaybackOptions::Stop => println!("Stop playlist"),
+            PlaybackOptions::Play => app.play(),
+            PlaybackOptions::Pause => app.pause(),
+            PlaybackOptions::Stop => app.stop(),
         },
-        Command::Search { query, limit } => println!(
-            "search for music with name {} and with limit {}",
-            query, limit
-        ),
-        Command::Add { link } => println!("Add music with link {}", link),
+        Command::Search { query, limit } => app.search(query, limit),
+        Command::Add { link } => app.add(link),
+        Command::Return => app.return_to_main(),
+
         Command::Unknown(cmd) => println!("Unknown command: {}", cmd),
     };
 
