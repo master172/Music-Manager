@@ -3,28 +3,36 @@ pub mod executor;
 pub mod parser;
 pub mod tokenizer;
 
-use std::{
-    io::{self, Write},
-    sync::{Arc, Mutex},
-};
+use std::sync::{Arc, Mutex};
 
 use crate::MusicManager;
+use rustyline::DefaultEditor;
 
 pub fn start(app: Arc<Mutex<MusicManager>>) {
+    let mut rl = DefaultEditor::new().unwrap();
+
     loop {
-        print!("> ");
-        io::stdout().flush().unwrap();
+        match rl.readline("> ") {
+            Ok(input) => {
+                let command = parser::parse(&input);
 
-        let mut input = String::new();
-        if io::stdin().read_line(&mut input).is_err() {
-            println!("failed to read input");
-            continue;
-        }
-        let command = parser::parse(&input);
-
-        let mut mgr = app.lock().unwrap();
-        if !executor::execute(command, &mut *mgr) {
-            break;
+                let mut mgr = app.lock().unwrap();
+                if !executor::execute(command, &mut *mgr) {
+                    break;
+                }
+            }
+            Err(rustyline::error::ReadlineError::Interrupted) => {
+                // Ctrl-C → just show prompt again
+                continue;
+            }
+            Err(rustyline::error::ReadlineError::Eof) => {
+                // Ctrl-D / Ctrl-Z → exit cleanly
+                break;
+            }
+            Err(err) => {
+                eprintln!("read error: {err}");
+                break;
+            }
         }
     }
 }

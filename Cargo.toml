@@ -8,4 +8,8 @@ build = "build.rs"
 rand = "0.10.0"
 regex = "1.12.3"
 rodio = "0.21.1"
+rustyline = "17.0.2"
 tokio = "1.49.0"
+
+[profile.release]
+debug = true

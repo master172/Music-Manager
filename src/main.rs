@@ -1,9 +1,9 @@
 use crate::app_interface::AppInterface;
 use crate::song_manager::audio_commands::{AudioCommands, AudioEvent};
 use crate::song_manager::track_manager;
+use std::fs;
 use std::path::Path;
 use std::sync::{Arc, Mutex};
-use std::{fs, thread};
 mod app_interface;
 mod playlist_manager;
 mod repl;
@@ -22,7 +22,7 @@ enum State {
 
 pub struct MusicManager {
     audio_tx: std::sync::mpsc::Sender<AudioCommands>,
-    event_rx: std::sync::mpsc::Receiver<AudioEvent>,
+    //event_rx: std::sync::mpsc::Receiver<AudioEvent>,
     state: State,
 }
 
@@ -40,14 +40,6 @@ impl MusicManager {
             }
         }
         true
-    }
-
-    fn run(&mut self) {
-        while let Ok(event) = self.event_rx.try_recv() {
-            if !self.handle_event(event) {
-                return;
-            }
-        }
     }
 }
 
@@ -189,15 +181,16 @@ fn main() {
     let manager = Arc::new(Mutex::new(MusicManager {
         state: State::Main,
         audio_tx: audio_tx.clone(),
-        event_rx,
+        //event_rx,
     }));
 
     let manager_clone = Arc::clone(&manager);
-    thread::spawn(move || {
-        loop {
+    std::thread::spawn(move || {
+        while let Ok(event) = event_rx.recv() {
             let mut mgr = manager_clone.lock().unwrap();
-            mgr.run();
-            //std::thread::sleep(Duration::from_millis(5));
+            if !mgr.handle_event(event) {
+                break;
+            }
         }
     });
 
