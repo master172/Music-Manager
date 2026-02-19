@@ -8,6 +8,7 @@ use std::time::Duration;
 
 pub fn start_audio_thread(event_tx: mpsc::Sender<AudioEvent>) -> mpsc::Sender<AudioCommands> {
     let mut music_playing: bool = false;
+    let mut track_finished_sent = false;
     let (tx, rx) = mpsc::channel();
 
     let mut repeat_count: i32 = 0;
@@ -25,6 +26,7 @@ pub fn start_audio_thread(event_tx: mpsc::Sender<AudioEvent>) -> mpsc::Sender<Au
                 Ok(command) => match command {
                     AudioCommands::Play(path) => {
                         music_playing = true;
+                        track_finished_sent = false;
                         let mut path_to_play = path.clone();
 
                         if repeat_count != 0
@@ -65,7 +67,8 @@ pub fn start_audio_thread(event_tx: mpsc::Sender<AudioEvent>) -> mpsc::Sender<Au
                 Err(mpsc::RecvTimeoutError::Timeout) => {}
                 Err(_) => break,
             }
-            if sink.empty() && music_playing {
+            if sink.empty() && music_playing && !track_finished_sent {
+                track_finished_sent = true;
                 let _ = event_tx.send(AudioEvent::TrackFinished).unwrap();
             }
         }
