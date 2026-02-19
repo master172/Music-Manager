@@ -1,6 +1,6 @@
 use std::fs::File;
+use std::sync::mpsc;
 use std::thread;
-use std::{io::Sink, sync::mpsc};
 
 use crate::song_manager::audio_commands::{AudioCommands, AudioEvent};
 use rodio::Decoder;

@@ -1,19 +1,36 @@
 use crate::song_manager::audio_commands::AudioCommands;
-use rand::seq::IteratorRandom;
+use rand::prelude::IndexedRandom;
 use std::fs;
 
-fn select_random_song(playlist_name: &str) -> String {
+fn select_random_song(playlist_name: &str) -> Option<String> {
+    let dir_path = format!("playlists/{}", playlist_name);
+
+    let files: Vec<_> = fs::read_dir(&dir_path)
+        .ok()?
+        .filter_map(|entry| entry.ok())
+        .map(|entry| entry.path())
+        .filter(|path| path.is_file())
+        .filter(|path| {
+            path.extension()
+                .and_then(|ext| ext.to_str())
+                .map(|ext| ["mp3", "wav", "ogg", "flac"].contains(&ext))
+                .unwrap_or(false)
+        })
+        .collect();
+
     let mut rng = rand::rng();
-    let files = fs::read_dir(format!("playlists/{}", playlist_name)).unwrap();
-    let file = files.choose(&mut rng).unwrap().unwrap();
-    let file_path = file.path().to_str().unwrap().to_string();
-    return file_path;
+    files
+        .choose(&mut rng)
+        .and_then(|p| p.to_str().map(|s| s.to_string()))
 }
 
 pub fn play_playlist(playlist_name: &str, audio_tx: &std::sync::mpsc::Sender<AudioCommands>) {
     println!("playing playlist");
     let song = select_random_song(playlist_name);
-    audio_tx.send(AudioCommands::Play(song)).unwrap();
+    match song {
+        Some(song) => audio_tx.send(AudioCommands::Play(song)).unwrap(),
+        None => println!("No songs found in playlist"),
+    }
 }
 
 pub fn play_selected(

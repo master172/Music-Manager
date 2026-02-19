@@ -32,6 +32,7 @@ pub enum Command {
     },
     Add {
         link: String,
+        name: String,
     },
     Help,
     Return,

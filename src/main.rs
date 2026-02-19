@@ -3,12 +3,12 @@ use crate::song_manager::audio_commands::{AudioCommands, AudioEvent};
 use crate::song_manager::track_manager;
 use std::path::Path;
 use std::sync::{Arc, Mutex};
-use std::time::Duration;
 use std::{fs, thread};
 mod app_interface;
 mod playlist_manager;
 mod repl;
 mod song_manager;
+use std::path::PathBuf;
 
 #[derive(Debug)]
 pub struct PlaylistState {
@@ -129,7 +129,15 @@ impl AppInterface for MusicManager {
 
     fn search(&mut self, query: String, limit: usize) {}
 
-    fn add(&mut self, link: String) {}
+    fn add(&mut self, link: String, name: String) {
+        match &mut self.state {
+            State::Main => println!("no playlist selected"),
+            State::Playlist(playlist) => {
+                let path = format!("{}", &playlist.name);
+                playlist_manager::downloader::download_audio(link, path, name);
+            }
+        }
+    }
 
     fn quit(&mut self) {
         self.audio_tx.send(AudioCommands::Quit).unwrap();
@@ -140,6 +148,10 @@ impl AppInterface for MusicManager {
 fn create_initial_playlist_dir() -> std::io::Result<()> {
     if !fs::exists("playlists")? {
         fs::create_dir("playlists")?;
+    }
+
+    if !fs::exists("libs")? {
+        fs::create_dir("libs")?;
     }
     Ok(())
 }

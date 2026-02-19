@@ -12,7 +12,7 @@ pub trait AppInterface {
     fn play_selected(&mut self, path: String);
 
     fn search(&mut self, query: String, limit: usize);
-    fn add(&mut self, link: String);
+    fn add(&mut self, link: String, name: String);
 
     fn return_to_main(&mut self);
 

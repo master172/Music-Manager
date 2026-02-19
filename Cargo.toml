@@ -6,3 +6,5 @@ edition = "2024"
 [dependencies]
 rand = "0.10.0"
 rodio = "0.21.1"
+tokio = "1.49.0"
+yt-dlp = "1.4.11"
