@@ -1,9 +1,10 @@
-use std::fs;
-use std::path::Path;
-
 use crate::app_interface::AppInterface;
 use crate::song_manager::audio_commands::{AudioCommands, AudioEvent};
 use crate::song_manager::track_manager;
+use std::path::Path;
+use std::sync::{Arc, Mutex};
+use std::time::Duration;
+use std::{fs, thread};
 mod app_interface;
 mod playlist_manager;
 mod repl;
@@ -33,6 +34,7 @@ impl MusicManager {
                 return false;
             }
             AudioEvent::TrackFinished => {
+                println!("track finished");
                 self.play();
             }
             AudioEvent::Error(e) => {
@@ -42,11 +44,10 @@ impl MusicManager {
         true
     }
 
-    pub fn run(&mut self) {
-        println!("Music Manager Working");
-        while let Ok(event) = self.event_rx.recv() {
+    fn run(&mut self) {
+        while let Ok(event) = self.event_rx.try_recv() {
             if !self.handle_event(event) {
-                break;
+                return;
             }
         }
     }
@@ -129,18 +130,28 @@ fn create_initial_playlist_dir() -> std::io::Result<()> {
 }
 
 fn main() {
-    let (event_tx, event_rx) = std::sync::mpsc::channel();
-    let audio_tx = song_manager::audio_thread::start_audio_thread(event_tx);
-    let mut manager: MusicManager = MusicManager {
-        state: State::Main,
-        audio_tx,
-        event_rx,
-    };
-
     if let Err(e) = create_initial_playlist_dir() {
         println!("Error creating directory {}", e);
         return;
     }
 
-    repl::start(&mut manager);
+    let (event_tx, event_rx) = std::sync::mpsc::channel();
+    let audio_tx = song_manager::audio_thread::start_audio_thread(event_tx.clone());
+
+    let manager = Arc::new(Mutex::new(MusicManager {
+        state: State::Main,
+        audio_tx: audio_tx.clone(),
+        event_rx,
+    }));
+
+    let manager_clone = Arc::clone(&manager);
+    thread::spawn(move || {
+        loop {
+            let mut mgr = manager_clone.lock().unwrap();
+            mgr.run();
+            //std::thread::sleep(Duration::from_millis(5));
+        }
+    });
+
+    repl::start(Arc::clone(&manager));
 }

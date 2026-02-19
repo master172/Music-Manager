@@ -2,11 +2,14 @@ pub mod command;
 pub mod executor;
 pub mod parser;
 
-use std::io::{self, Write};
+use std::{
+    io::{self, Write},
+    sync::{Arc, Mutex},
+};
 
-use crate::app_interface::AppInterface;
+use crate::MusicManager;
 
-pub fn start(app: &mut dyn AppInterface) {
+pub fn start(app: Arc<Mutex<MusicManager>>) {
     loop {
         print!("> ");
         io::stdout().flush().unwrap();
@@ -17,8 +20,9 @@ pub fn start(app: &mut dyn AppInterface) {
             continue;
         }
         let command = parser::parse(&input);
-        let result = executor::execute(command, app);
-        if !result {
+
+        let mut mgr = app.lock().unwrap();
+        if !executor::execute(command, &mut *mgr) {
             break;
         }
     }
