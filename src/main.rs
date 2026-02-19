@@ -101,6 +101,10 @@ impl AppInterface for MusicManager {
         self.audio_tx.send(AudioCommands::Resume).unwrap();
     }
 
+    fn repeat(&mut self, count: i32) {
+        self.audio_tx.send(AudioCommands::Repeat(count)).unwrap();
+    }
+
     fn help(&mut self) {
         println!("To create a playlist type playlist new playlist_name");
         println!("To delete a playlist type playlist delete playlist_name");

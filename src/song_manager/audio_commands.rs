@@ -5,6 +5,7 @@ pub enum AudioCommands {
     Stop,
     Quit,
     Seek(i32),
+    Repeat(i32),
 }
 
 pub enum AudioEvent {

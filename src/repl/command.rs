@@ -12,6 +12,7 @@ pub enum PlaybackOptions {
     Stop,
     Resume,
     Seek(i32),
+    Repeat(i32),
 }
 
 #[derive(Debug)]

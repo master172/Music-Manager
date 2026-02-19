@@ -48,6 +48,13 @@ pub fn parse(input: &str) -> Command {
             };
         }
 
+        ["repeat", count] => {
+            let repeat_count: i32 = count.parse().expect("failed to parse repeat count");
+            return Command::Playback {
+                option: PlaybackOptions::Repeat(repeat_count),
+            };
+        }
+
         ["search", query, limit] => Command::Search {
             query: query.to_string(),
             limit: limit.parse().unwrap_or(10),
