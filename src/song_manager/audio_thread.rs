@@ -36,6 +36,9 @@ pub fn start_audio_thread(event_tx: mpsc::Sender<AudioEvent>) -> mpsc::Sender<Au
                         sink.stop();
                         music_playing = false
                     }
+                    AudioCommands::Seek(time) => {
+                        sink.try_seek(Duration::from_secs(time as u64)).unwrap()
+                    }
                     AudioCommands::Quit => {
                         let _ = event_tx.send(AudioEvent::Quit).unwrap();
                         break;

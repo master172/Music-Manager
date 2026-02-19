@@ -7,6 +7,7 @@ pub trait AppInterface {
     fn stop(&mut self);
     fn pause(&mut self);
     fn resume(&mut self);
+    fn seek(&mut self, time: i32);
 
     fn search(&mut self, query: String, limit: usize);
     fn add(&mut self, link: String);

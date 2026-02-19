@@ -41,6 +41,13 @@ pub fn parse(input: &str) -> Command {
             option: PlaybackOptions::Pause,
         },
 
+        ["seek", time] => {
+            let seek_time: i32 = time.parse().expect("failed to parse seek time");
+            return Command::Playback {
+                option: PlaybackOptions::Seek(seek_time),
+            };
+        }
+
         ["search", query, limit] => Command::Search {
             query: query.to_string(),
             limit: limit.parse().unwrap_or(10),

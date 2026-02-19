@@ -34,7 +34,6 @@ impl MusicManager {
                 return false;
             }
             AudioEvent::TrackFinished => {
-                println!("track finished");
                 self.play();
             }
             AudioEvent::Error(e) => {
@@ -88,6 +87,10 @@ impl AppInterface for MusicManager {
 
     fn pause(&mut self) {
         self.audio_tx.send(AudioCommands::Pause).unwrap();
+    }
+
+    fn seek(&mut self, time: i32) {
+        self.audio_tx.send(AudioCommands::Seek(time)).unwrap();
     }
 
     fn stop(&mut self) {
