@@ -78,7 +78,7 @@ impl AppInterface for MusicManager {
 
     fn list(&mut self) {
         match &mut self.state {
-            State::Main => println!("no playlist selected"),
+            State::Main => playlist_manager::operations::playlists(),
             State::Playlist(playlist) => {
                 playlist_manager::operations::list(&playlist.name);
             }

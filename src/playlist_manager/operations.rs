@@ -2,6 +2,8 @@ use std::fs;
 use std::path::PathBuf;
 use std::thread;
 
+use yt_dlp::utils::Platform;
+
 pub fn list_playlist_files_async(
     playlist_name: String,
     callback: impl Fn(Vec<PathBuf>) + Send + 'static,
@@ -51,5 +53,30 @@ pub fn delete_file_from_playlist(playlist_name: &str, file_name: &str) -> std::i
             std::io::ErrorKind::NotFound,
             format!("File {} not found in playlist {}", file_name, playlist_name),
         ))
+    }
+}
+
+pub fn list_playlists() -> Vec<String> {
+    let playlists_dir = std::env::current_dir()
+        .expect("Failed to get current working directory")
+        .join("playlists");
+
+    if !playlists_dir.exists() {
+        return vec![]; // no playlists folder yet
+    }
+
+    fs::read_dir(&playlists_dir)
+        .unwrap()
+        .filter_map(|entry| entry.ok())
+        .filter(|entry| entry.path().is_dir()) // only folders
+        .filter_map(|entry| entry.file_name().into_string().ok()) // convert OsString to String
+        .collect()
+}
+
+pub fn playlists() {
+    let playlists = list_playlists();
+    println!("Playlists:");
+    for playlist in playlists {
+        println!("{}", playlist);
     }
 }

@@ -26,7 +26,7 @@ pub fn parse(input: &str) -> Command {
             name: name.to_string(),
         },
 
-        ["playlist", "enter", name] => Command::Playlist {
+        ["playlist", "select", name] => Command::Playlist {
             option: PlaylistOptions::Enter,
             name: name.to_string(),
         },
