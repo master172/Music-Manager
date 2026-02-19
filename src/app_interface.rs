@@ -18,5 +18,7 @@ pub trait AppInterface {
 
     fn help(&mut self);
 
+    fn list(&mut self);
+    fn delete_song(&mut self, name: String);
     fn quit(&mut self);
 }

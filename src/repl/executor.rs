@@ -25,6 +25,8 @@ pub fn execute(command: Command, app: &mut dyn AppInterface) -> bool {
             PlaybackOptions::Repeat(count) => app.repeat(count),
             PlaybackOptions::PlaySelected(path) => app.play_selected(path),
         },
+        Command::List => app.list(),
+        Command::Delete(name) => app.delete_song(name),
         Command::Search { query, limit } => app.search(query, limit),
         Command::Add { link } => app.add(link),
         Command::Return => app.return_to_main(),

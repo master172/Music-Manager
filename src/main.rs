@@ -76,6 +76,25 @@ impl AppInterface for MusicManager {
         }
     }
 
+    fn list(&mut self) {
+        match &mut self.state {
+            State::Main => println!("no playlist selected"),
+            State::Playlist(playlist) => {
+                playlist_manager::operations::list(&playlist.name);
+            }
+        }
+    }
+
+    fn delete_song(&mut self, name: String) {
+        match &mut self.state {
+            State::Main => println!("no playlist selected"),
+            State::Playlist(playlist) => {
+                playlist_manager::operations::delete_file_from_playlist(&playlist.name, &name)
+                    .unwrap();
+            }
+        }
+    }
+
     fn play(&mut self) {
         match &mut self.state {
             State::Main => println!("no playlist selected"),

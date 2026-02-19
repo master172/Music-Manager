@@ -33,6 +33,8 @@ pub enum Command {
     Add {
         link: String,
     },
+    List,
+    Delete(String),
     Help,
     Return,
     Unknown(String),

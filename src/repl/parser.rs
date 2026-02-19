@@ -1,11 +1,17 @@
 use crate::repl::command::{Command, PlaybackOptions, PlaylistOptions};
+use crate::repl::tokenizer::tokenize;
 
 pub fn parse(input: &str) -> Command {
-    //tokenize the input string currently just splitting whitespace later can substitute for a proper tokenizer
-    let tokens: Vec<&str> = input.split_whitespace().collect();
+    //tokenize the input string currently just splitting whitespace and inverted commas later can substitute for a proper tokenizer
+    let tokens: Vec<String> = tokenize(input);
 
-    //parsing currently also only supports whitespace separated ordered fixed tokens
-    match tokens.as_slice() {
+    //parsing currently also only supports whitespace and inverted comma separated ordered fixed tokens
+    match tokens
+        .iter()
+        .map(|s| s.as_str())
+        .collect::<Vec<_>>()
+        .as_slice()
+    {
         ["quit"] | ["exit"] => Command::Quit,
 
         ["help"] => Command::Help,
@@ -68,6 +74,9 @@ pub fn parse(input: &str) -> Command {
             query: query.to_string(),
             limit: 10,
         },
+
+        ["list"] => Command::List,
+        ["delete", name] => Command::Delete(name.to_string()),
 
         ["add", url] => Command::Add {
             link: url.to_string(),

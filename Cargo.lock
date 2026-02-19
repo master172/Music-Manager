@@ -1303,6 +1303,7 @@ name = "music_manager"
 version = "0.1.0"
 dependencies = [
  "rand 0.10.0",
+ "regex",
  "rodio",
  "tokio",
  "yt-dlp",
