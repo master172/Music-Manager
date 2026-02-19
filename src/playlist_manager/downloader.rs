@@ -1,40 +1,76 @@
 use std::fs;
+use std::path::Path;
 use std::path::PathBuf;
-use tokio::runtime::Runtime;
-use yt_dlp::Downloader;
-use yt_dlp::client::deps::Libraries;
+use std::process::Command;
+use std::thread;
 
-pub fn download_audio(url: String, output_path: String, name: String) {
-    std::thread::spawn(move || {
-        let rt = Runtime::new().unwrap();
-        rt.block_on(async move {
-            let libraries_dir = PathBuf::from("libs");
+pub fn download_audio(url: String, output_path: String) {
+    thread::spawn(move || {
+        let output_dir = playlist_output_path(&output_path);
+        let output_template = output_dir.join("%(title)s.%(ext)s");
+        let output_template_str = output_template.to_str().unwrap();
 
-            let youtube = libraries_dir.join("yt-dlp");
-            let ffmpeg = libraries_dir.join("ffmpeg");
+        let yt_dlp_path = Path::new("libs/yt-dlp.exe");
+        let ffmpeg_path = Path::new("libs/ffmpeg.exe");
 
-            let libraries = Libraries::new(youtube, ffmpeg);
-            let output_dir = playlist_output_path(&output_path);
+        let status = Command::new(yt_dlp_path)
+            .args(["-f", "bestaudio", "-o", output_template_str, &url])
+            .status()
+            .expect("Failed to run yt-dlp.exe");
 
-            let file_name = format!("{}.mp3", name);
-            //let path: String = String::from(url);
+        if !status.success() {
+            eprintln!("yt-dlp failed for URL: {}", url);
+            return;
+        }
 
-            match Downloader::new(libraries, output_dir).await {
-                Ok(downloader) => {
-                    if let Err(e) = downloader
-                        .download_audio_stream_from_url(url, file_name)
-                        .await
-                    {
-                        eprintln!("Error downloading audio: {}", e);
-                    } else {
-                        println!("Audio downloaded successfully");
-                    }
-                }
-                Err(err) => {
-                    eprintln!("Error initializing downloader: {}", err);
-                }
+        let downloaded_file = fs::read_dir(&output_dir)
+            .unwrap()
+            .filter_map(|e| e.ok())
+            .map(|e| e.path())
+            .find(|p| {
+                p.is_file()
+                    && matches!(
+                        p.extension().and_then(|ext| ext.to_str()).unwrap_or(""),
+                        "webm" | "m4a" | "opus"
+                    )
+            });
+
+        let downloaded_file = match downloaded_file {
+            Some(f) => f,
+            None => {
+                eprintln!("No audio file found for URL: {}", url);
+                return;
             }
-        });
+        };
+
+        let mut mp3_file = downloaded_file.clone();
+        mp3_file.set_extension("mp3");
+
+        let status = Command::new(ffmpeg_path)
+            .args([
+                "-i",
+                downloaded_file.to_str().unwrap(),
+                "-vn",
+                "-ab",
+                "192k",
+                "-ar",
+                "44100",
+                "-y",
+                mp3_file.to_str().unwrap(),
+            ])
+            .status()
+            .expect("Failed to run ffmpeg");
+
+        if !status.success() {
+            eprintln!(
+                "FFmpeg failed to convert {} to mp3",
+                downloaded_file.display()
+            );
+        } else {
+            println!("Downloaded and converted: {}", mp3_file.display());
+        }
+
+        let _ = fs::remove_file(downloaded_file);
     });
 }
 

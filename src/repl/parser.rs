@@ -64,9 +64,8 @@ pub fn parse(input: &str) -> Command {
             limit: limit.parse().unwrap_or(10),
         },
 
-        ["add", url, name] => Command::Add {
+        ["add", url] => Command::Add {
             link: url.to_string(),
-            name: name.to_string(),
         },
 
         ["return"] => Command::Return,

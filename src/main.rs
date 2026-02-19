@@ -129,12 +129,12 @@ impl AppInterface for MusicManager {
 
     fn search(&mut self, query: String, limit: usize) {}
 
-    fn add(&mut self, link: String, name: String) {
+    fn add(&mut self, link: String) {
         match &mut self.state {
             State::Main => println!("no playlist selected"),
             State::Playlist(playlist) => {
                 let path = format!("{}", &playlist.name);
-                playlist_manager::downloader::download_audio(link, path, name);
+                playlist_manager::downloader::download_audio(link, path);
             }
         }
     }

@@ -26,7 +26,7 @@ pub fn execute(command: Command, app: &mut dyn AppInterface) -> bool {
             PlaybackOptions::PlaySelected(path) => app.play_selected(path),
         },
         Command::Search { query, limit } => app.search(query, limit),
-        Command::Add { link, name } => app.add(link, name),
+        Command::Add { link } => app.add(link),
         Command::Return => app.return_to_main(),
 
         Command::Unknown(cmd) => println!("Unknown command: {}", cmd),
