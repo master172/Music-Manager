@@ -20,6 +20,7 @@ pub fn execute(command: Command, app: &mut dyn AppInterface) -> bool {
             PlaybackOptions::Play => app.play(),
             PlaybackOptions::Pause => app.pause(),
             PlaybackOptions::Stop => app.stop(),
+            PlaybackOptions::Resume => app.resume(),
         },
         Command::Search { query, limit } => app.search(query, limit),
         Command::Add { link } => app.add(link),

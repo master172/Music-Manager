@@ -25,15 +25,19 @@ pub fn parse(input: &str) -> Command {
             name: name.to_string(),
         },
 
-        ["playback", "play"] => Command::Playback {
+        ["play"] => Command::Playback {
             option: PlaybackOptions::Play,
         },
 
-        ["playback", "stop"] => Command::Playback {
+        ["stop"] => Command::Playback {
             option: PlaybackOptions::Stop,
         },
 
-        ["playback", "pause"] => Command::Playback {
+        ["resume"] => Command::Playback {
+            option: PlaybackOptions::Resume,
+        },
+
+        ["pause"] => Command::Playback {
             option: PlaybackOptions::Pause,
         },
 

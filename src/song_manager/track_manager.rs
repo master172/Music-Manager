@@ -1,4 +1,4 @@
-use crate::song_manager::audio_player;
+use crate::song_manager::audio_commands::AudioCommands;
 use rand::seq::IteratorRandom;
 use std::fs;
 
@@ -10,13 +10,13 @@ fn select_random_song(playlist_name: &str) -> String {
     return file_path;
 }
 
-pub fn play_playlist(playlist_name: &str) {
+pub fn play_playlist(playlist_name: &str, audio_tx: &std::sync::mpsc::Sender<AudioCommands>) {
     let song = select_random_song(playlist_name);
-    let success = audio_player::play_audio(&song);
-    if !success {
-        println!("failed to play song {}", song);
-    } else {
-        println!("switching song now");
-        play_playlist(playlist_name);
-    }
+    audio_tx.send(AudioCommands::Play(song)).unwrap();
+    // if !success {
+    //     println!("failed to play song {}", song);
+    //} else {
+    //     println!("switching song now");
+    //     play_playlist(playlist_name, audio_tx);
+    // }
 }

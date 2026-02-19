@@ -10,6 +10,7 @@ pub enum PlaybackOptions {
     Play,
     Pause,
     Stop,
+    Resume,
 }
 
 #[derive(Debug)]

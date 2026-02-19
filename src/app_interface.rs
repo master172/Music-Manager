@@ -6,6 +6,7 @@ pub trait AppInterface {
     fn play(&mut self);
     fn stop(&mut self);
     fn pause(&mut self);
+    fn resume(&mut self);
 
     fn search(&mut self, query: String, limit: usize);
     fn add(&mut self, link: String);
