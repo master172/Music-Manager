@@ -8,7 +8,6 @@ mod app_interface;
 mod playlist_manager;
 mod repl;
 mod song_manager;
-use std::path::PathBuf;
 
 #[derive(Debug)]
 pub struct PlaylistState {
@@ -127,7 +126,9 @@ impl AppInterface for MusicManager {
         self.state = State::Main;
     }
 
-    fn search(&mut self, query: String, limit: usize) {}
+    fn search(&mut self, query: String, limit: usize) {
+        playlist_manager::search::search_async(&query.replace("_", " "), limit);
+    }
 
     fn add(&mut self, link: String) {
         match &mut self.state {

@@ -61,7 +61,12 @@ pub fn parse(input: &str) -> Command {
 
         ["search", query, limit] => Command::Search {
             query: query.to_string(),
-            limit: limit.parse().unwrap_or(10),
+            limit: limit.parse().unwrap(),
+        },
+
+        ["search", query] => Command::Search {
+            query: query.to_string(),
+            limit: 10,
         },
 
         ["add", url] => Command::Add {
