@@ -55,6 +55,10 @@ pub fn parse(input: &str) -> Command {
             };
         }
 
+        ["play", path] => Command::Playback {
+            option: PlaybackOptions::PlaySelected(path.to_string()),
+        },
+
         ["search", query, limit] => Command::Search {
             query: query.to_string(),
             limit: limit.parse().unwrap_or(10),

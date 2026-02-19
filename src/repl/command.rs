@@ -13,6 +13,7 @@ pub enum PlaybackOptions {
     Resume,
     Seek(i32),
     Repeat(i32),
+    PlaySelected(String),
 }
 
 #[derive(Debug)]

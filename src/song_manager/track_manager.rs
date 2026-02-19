@@ -11,12 +11,17 @@ fn select_random_song(playlist_name: &str) -> String {
 }
 
 pub fn play_playlist(playlist_name: &str, audio_tx: &std::sync::mpsc::Sender<AudioCommands>) {
+    println!("playing playlist");
     let song = select_random_song(playlist_name);
     audio_tx.send(AudioCommands::Play(song)).unwrap();
-    // if !success {
-    //     println!("failed to play song {}", song);
-    //} else {
-    //     println!("switching song now");
-    //     play_playlist(playlist_name, audio_tx);
-    // }
+}
+
+pub fn play_selected(
+    playlist_name: &str,
+    song_name: &str,
+    audio_tx: &std::sync::mpsc::Sender<AudioCommands>,
+) {
+    println!("playing selected");
+    let song_path = format!("playlists/{}/{}", playlist_name, song_name);
+    audio_tx.send(AudioCommands::Play(song_path)).unwrap();
 }

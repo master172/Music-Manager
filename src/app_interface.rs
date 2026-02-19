@@ -9,6 +9,7 @@ pub trait AppInterface {
     fn resume(&mut self);
     fn seek(&mut self, time: i32);
     fn repeat(&mut self, count: i32);
+    fn play_selected(&mut self, path: String);
 
     fn search(&mut self, query: String, limit: usize);
     fn add(&mut self, link: String);

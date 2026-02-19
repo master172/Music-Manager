@@ -104,6 +104,14 @@ impl AppInterface for MusicManager {
     fn repeat(&mut self, count: i32) {
         self.audio_tx.send(AudioCommands::Repeat(count)).unwrap();
     }
+    fn play_selected(&mut self, path: String) {
+        match &mut self.state {
+            State::Main => println!("no playlist selected"),
+            State::Playlist(playlist) => {
+                track_manager::play_selected(&playlist.name, &path, &self.audio_tx);
+            }
+        }
+    }
 
     fn help(&mut self) {
         println!("To create a playlist type playlist new playlist_name");
