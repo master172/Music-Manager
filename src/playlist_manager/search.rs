@@ -48,13 +48,13 @@ pub fn search_youtube_async(
     });
 }
 
-pub fn search(query: &str, limit: usize) {
-    let results = search_youtube(query, limit);
-    println!("Search completed!");
-    for r in results {
-        println!("{} -> {}", r.title, r.url);
-    }
-}
+//pub fn search(query: &str, limit: usize) {
+//    let results = search_youtube(query, limit);
+//    println!("Search completed!");
+//    for r in results {
+//        println!("{} -> {}", r.title, r.url);
+//    }
+//}
 
 pub fn search_async(query: &str, limit: usize) {
     search_youtube_async(query.into(), limit, |results| {

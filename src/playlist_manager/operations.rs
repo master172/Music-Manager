@@ -2,8 +2,6 @@ use std::fs;
 use std::path::PathBuf;
 use std::thread;
 
-use yt_dlp::utils::Platform;
-
 pub fn list_playlist_files_async(
     playlist_name: String,
     callback: impl Fn(Vec<PathBuf>) + Send + 'static,
