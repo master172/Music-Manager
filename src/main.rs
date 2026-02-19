@@ -69,8 +69,9 @@ impl AppInterface for MusicManager {
             let path = format!("playlists/{}", name);
             if Path::new(&path).exists() {
                 self.state = State::Playlist(PlaylistState { name });
+                self.audio_tx.send(AudioCommands::Repeat(0)).unwrap();
             } else {
-                println!("no souch playlist exsists")
+                println!("no such playlist exists")
             }
         }
     }

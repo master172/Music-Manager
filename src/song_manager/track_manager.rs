@@ -25,7 +25,6 @@ fn select_random_song(playlist_name: &str) -> Option<String> {
 }
 
 pub fn play_playlist(playlist_name: &str, audio_tx: &std::sync::mpsc::Sender<AudioCommands>) {
-    println!("playing playlist");
     let song = select_random_song(playlist_name);
     match song {
         Some(song) => audio_tx.send(AudioCommands::Play(song)).unwrap(),
