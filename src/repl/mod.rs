@@ -22,8 +22,7 @@ pub fn start(app: Arc<Mutex<MusicManager>>) {
                 }
             }
             Err(rustyline::error::ReadlineError::Interrupted) => {
-                // Ctrl-C → just show prompt again
-                continue;
+                break;
             }
             Err(rustyline::error::ReadlineError::Eof) => {
                 // Ctrl-D / Ctrl-Z → exit cleanly
